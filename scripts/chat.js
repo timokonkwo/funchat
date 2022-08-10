@@ -3,6 +3,7 @@
 // updating the username
 // updating the rooms 
 
+
 class Chatroom {
     constructor(room, username){
         this.room = room;
@@ -11,37 +12,32 @@ class Chatroom {
         this.unsub;
     }
 
-    async addChat(message) {
-
-        //format a chat object
-
+    async addChat(message){
         const now = new Date();
-
+        
         const chat = {
             message,
             username: this.username,
             room: this.room,
-            created_at: firebase.firestore.Timestamp.fromDate(now),
-        };
+            created_at: firebase.firestore.Timestamp.fromDate(now)
+        }
 
-        // Save the chat document
         const response = await this.chats.add(chat);
 
         return response;
-    } 
+    }
 
-    getChats(callback) {
+    getChats(callback){
         this.unsub = this.chats
-        .where('room', '==', this.room)
-        .orderBy('created_at')
-        .onSnapshot(snapshot => {
-            snapshot.docChanges().forEach(change => {
-                if (change.type === 'added'){
-                    // update UI
-                    callback(change.doc.data());
-                }
-            });
-        });
+            .where('room', '==', this.room)
+            .orderBy('created_at')
+            .onSnapshot(snapshot => {
+                snapshot.docChanges().forEach(change => {
+                    if (change.type === 'added'){
+                        callback(change.doc.data())
+                    }
+                })
+            })
     }
 
     updateName(username){
@@ -50,23 +46,9 @@ class Chatroom {
 
     updateRoom(room){
         this.room = room;
-        console.log("room updated");
         if (this.unsub){
             this.unsub();
         }
     }
 }
-
-const chatroom = new Chatroom('gaming', 'Tim');
-chatroom.getChats(data => {
-    console.log(data)
-})
-
-setTimeout(() => {
-    chatroom.updateRoom('general');
-    chatroom.updateName('Ben');
-    chatroom.getChats(data => console.log(data));
-
-    chatroom.addChat('Brothers, I just found something');
-}, 5000)
 
