@@ -8,12 +8,11 @@ class ChatUI {
 
     render(data){
         const when = dateFns.distanceInWordsToNow(
-            data.created_at.toDate(),
-            {addSufffix: true}
+            data.created_at.toDate()
         )
         const html = `
             <li class="list-group-item">
-                <span class="username">${data.username}:</span>
+                <span class="username">${data.username}</span><span>:</span>
                 <span class="message">${data.message}</span>
                 <div class="time">${when} ago</div>
             </li>
